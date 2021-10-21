@@ -29,4 +29,3 @@ class ImoForm(forms.Form):
     ship_type = forms.DecimalField(choices=get_choices('ship_type'), required=False)
     issue_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), required=False)
     expire_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), required=False)
-    expire_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), required=False)
