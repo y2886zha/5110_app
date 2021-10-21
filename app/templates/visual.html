@@ -1,28 +1,56 @@
-from django import forms
-from django.db import connections
-from django.core.cache import cache
+{% extends "base.html" %}
+{% block title %} Visual {% endblock %}
+{% load static %}
 
-DAY_IN_SEC = 24 * 60 * 60
-
-
-def get_choices(col: str):
-    # Try to get choices from cache
-    col_choices_key = f'{col}-CHOICES'
-    if col_choices_key in cache:
-        return cache[col_choices_key]
-
-    # If choices are not in cache, query db, set cache and then return
-    with connections['default'].cursor() as cursor:
-        cursor.execute(f'SELECT DISTINCT {col} FROM co2emission_reduced')
-        choices = [('', '---------')]
-        for row in cursor.fetchall():
-            choices.append((row[0], row[0]))
-
-    cache.set(col_choices_key, choices, timeout=DAY_IN_SEC)
-    return choices
+{% block content %}
+<div class="container" style="padding-bottom: 50px;">
+	<h2>Ship count under different ship type</h2>
+	<div id="container" style="width: 75%;">
+	  <canvas id="pie-chart"></canvas>
+	</div>
+	<div id="container" style="width: 75%;">
+	  <canvas id="bar-chart"></canvas>
 
 
-class ImoForm(forms.Form):
-    imo = forms.IntegerField(label='IMO Number', min_value=1111111, max_value=9999999)
-    ship_name = forms.CharField(max_length=64)
-    technical_efficiency_number = forms.DecimalField(label='EEDI', max_digits=6, min_value=0, required=False)
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+
+    var config = {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: {{data|safe}},
+          backgroundColor: ['#AFDCEC', '#81D8D0', '#006400', '#0AFFFF', '#1E90FF', '#3090C7', '#00BFFF', '#34A56F', '#50C878', '#DAEE01', '#FFFF33', '#FFEF00', '#FFD700', '#F6BE00', '#FF8C00'],
+          label: 'ship_type'
+        }],
+        labels: {{labels|safe}}
+      },
+      options: {
+        responsive: true
+      }
+    };
+    var config2 = {
+      type: 'bar',
+      data: {
+        datasets: [{
+          data: {{data|safe}},
+          backgroundColor: ['#AFDCEC', '#81D8D0', '#006400', '#0AFFFF', '#1E90FF', '#3090C7', '#00BFFF', '#34A56F', '#50C878', '#DAEE01', '#FFFF33', '#FFEF00', '#FFD700', '#F6BE00', '#FF8C00'],
+        }],
+        labels: {{labels|safe}}
+      },
+      options: {
+        responsive: true
+      }
+    };
+		
+    window.onload = function() {
+      var ctx = document.getElementById('pie-chart').getContext('2d');
+      window.myPie = new Chart(ctx, config);
+	  var ctx = document.getElementById('bar-chart').getContext('2d');
+      window.myBar = new Chart(ctx, config2);
+    };
+</script>
+{% endblock %}
