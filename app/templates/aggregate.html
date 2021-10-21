@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %} Emissions {% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding-bottom: 50px;">
+  <h2>Aggregate</h2>
+  {% if msg %}
+    <span class="text-success h4">{{ msg }}</span>
+  {% endif %}
+  <p>Showing page {{ page }} of {{ num_pages }} pages</p>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead>
+        <tr>
+          <th class="ordering" onclick="window.location='/aggregate/?order_by=ship_type'">Ship Type</th>
+          <th class="ordering" onclick="window.location='/aggregate/?order_by=count'">Count</th>
+          <th class="ordering" onclick="window.location='/aggregate/?order_by=min'">Minimum</th>
+          <th class="ordering" onclick="window.location='/aggregate/?order_by=max'">Maximum</th>
+          <th class="ordering" onclick="window.location='/aggregate/?order_by=avg'">Average</th>
+        </tr>
+      </thead>
+       {% for row in rows %}
+        <tr style="cursor:pointer;" onclick="window.location='/aggregate/ship_type/{{ row.ship_type }}'">
+          {% for val in row %}
+          <td>{{ val|default:'' }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}
